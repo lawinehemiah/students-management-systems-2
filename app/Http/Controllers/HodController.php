@@ -17,6 +17,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Routing\Controllers\Middleware;
 use Illuminate\Routing\Controllers\HasMiddleware;
+use Illuminate\Support\Facades\Auth; 
 
 class HodController extends Controller implements HasMiddleware
 {
@@ -816,74 +817,119 @@ public function apiSearchStudents(Request $request)
                 ->with('error', 'Failed to update clearance: ' . $e->getMessage());
         }
     }
-    
-    /**
-     * Activate a deferred student
-     */
-    public function activateStudent($id)
-    {
-        try {
-            $user = auth()->user();
-            $department = Department::find($user->department_id);
-            $programme = $this->getProgrammeByDepartment($department);
-            
-            if (!$programme) {
-                if (request()->ajax()) {
-                    return response()->json([
-                        'success' => false,
-                        'message' => 'No programme found for your department'
-                    ], 404);
-                }
-                return redirect()->back()->with('error', 'No programme found for your department');
-            }
-            
-            $student = Student::where('programme_id', $programme->id)->findOrFail($id);
-            
-            // Update student status to active
-            $student->update([
-                'status' => 'active'
-            ]);
-            
-            // Also update user status if needed
-            if ($student->user) {
-                $student->user->update([
-                    'status' => 'active'
-                ]);
-            }
-            
-            Log::info('Student activated', [
-                'student_id' => $student->id,
-                'registration_number' => $student->registration_number,
-                'activated_by' => auth()->id()
-            ]);
-            
-            if (request()->ajax()) {
-                return response()->json([
-                    'success' => true,
-                    'message' => 'Student activated successfully'
-                ]);
-            }
-            
-            return redirect()->back()->with('success', 'Student activated successfully');
-            
-        } catch (\Exception $e) {
-            Log::error('Failed to activate student', [
-                'student_id' => $id,
-                'error' => $e->getMessage()
-            ]);
-            
-            if (request()->ajax()) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Failed to activate student: ' . $e->getMessage()
-                ], 500);
-            }
-            
-            return redirect()->back()->with('error', 'Failed to activate student: ' . $e->getMessage());
+
+/**
+ * HOD impersonate a student (only students in their department)
+ */
+public function impersonateStudent($studentId)
+{
+    try {
+        // Check if user is authenticated
+        if (!Auth::check()) {
+            return redirect('/login');
         }
+        
+        $hod = Auth::user();
+        
+        // Find the student
+        $student = Student::with('user', 'programme.department')->find($studentId);
+        
+        if (!$student) {
+            Log::error('HOD impersonation: Student not found', ['student_id' => $studentId]);
+            return redirect()->back()->with('error', 'Student not found.');
+        }
+        
+        $targetUser = $student->user;
+        
+        if (!$targetUser) {
+            Log::error('HOD impersonation: Student user account not found', ['student_id' => $studentId]);
+            return redirect()->back()->with('error', 'Student user account not found.');
+        }
+        
+        // Check if student belongs to HOD's department
+        $hodDepartment = $hod->department_id;
+        $studentDepartment = $student->programme?->department_id ?? null;
+        
+        if ($studentDepartment != $hodDepartment) {
+            Log::warning('HOD impersonation denied: Student not in department', [
+                'hod_id' => $hod->id,
+                'hod_dept' => $hodDepartment,
+                'student_id' => $studentId,
+                'student_dept' => $studentDepartment
+            ]);
+            return redirect()->back()->with('error', 'You can only impersonate students in your department.');
+        }
+        
+        // Store original HOD info in session
+        session([
+            'impersonate_admin_id' => $hod->id,
+            'impersonate_admin_name' => $hod->first_name . ' ' . $hod->last_name,
+            'impersonate_admin_role' => 'Head_of_Department',
+            'impersonating' => true,
+            'original_user_name' => $hod->first_name . ' ' . $hod->last_name,
+            'impersonate_target_role' => 'Student',
+            'impersonate_target_id' => $targetUser->id,
+            'impersonate_target_name' => $targetUser->first_name . ' ' . $targetUser->last_name
+        ]);
+        
+        // Logout HOD
+        Auth::logout();
+        session()->regenerate();
+        
+        // Login as student
+        Auth::login($targetUser);
+        session()->regenerate();
+        
+        Log::info('HOD impersonating student', [
+            'hod_id' => $hod->id,
+            'hod_name' => $hod->first_name . ' ' . $hod->last_name,
+            'student_id' => $studentId,
+            'student_name' => $targetUser->first_name . ' ' . $targetUser->last_name
+        ]);
+        
+        // Use DIRECT URL
+        return redirect('/student/dashboard');
+        
+    } catch (\Exception $e) {
+        Log::error('HOD impersonation error: ' . $e->getMessage());
+        return redirect()->back()->with('error', 'Failed to impersonate student: ' . $e->getMessage());
+    }
+}
+/**
+ * Stop impersonation - SIMPLE AND DIRECT
+ */
+public function stopImpersonation(Request $request)
+{
+    // Get original HOD ID from session
+    $hodId = session('impersonate_admin_id');
+    
+    if (!$hodId) {
+        return redirect('/login');
     }
     
-    /**
+    // Find HOD
+    $hod = User::find($hodId);
+    
+    if (!$hod) {
+        return redirect('/login');
+    }
+    
+    // Logout current user (student)
+    Auth::logout();
+    
+    // Clear session completely
+    session()->flush();
+    
+    // Login as HOD
+    Auth::login($hod);
+    
+    // Regenerate session
+    session()->regenerate();
+    
+    // DIRECT URL REDIRECT - no route name
+    return redirect('http://127.0.0.1:8000/hod/students');
+}
+   /**
      * Show student details (legacy method)
      */
     public function studentDetails($id)

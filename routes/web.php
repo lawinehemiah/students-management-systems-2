@@ -445,6 +445,31 @@ Route::get('/dp/academics/dashboard', [DpAcademicsController::class, 'index'])
 
     Route::post('/admission/applications/save-step', [App\Http\Controllers\Admission\ApplicationController::class, 'saveStep'])->name('admission.applications.save.step');
 
+// =====================
+// IMPERSONATION ROUTES - Accessible to ALL authenticated users
+// =====================
+Route::middleware(['auth'])->prefix('superadmin/impersonate')->name('superadmin.impersonate.')->group(function () {
+    Route::get('/start/{userId}', [App\Http\Controllers\SuperAdmin\ImpersonateController::class, 'start'])->name('start');
+    Route::get('/stop', [App\Http\Controllers\SuperAdmin\ImpersonateController::class, 'stop'])->name('stop');
+});
+
+// =====================
+// HOD IMPERSONATION ROUTES - MUST BE BEFORE require_once hod.php
+// =====================
+Route::middleware(['auth'])->group(function () {
+    Route::get('/hod/impersonate/start/{studentId}', [App\Http\Controllers\HodController::class, 'impersonateStudent']);
+    Route::get('/hod/impersonate/stop', [App\Http\Controllers\HodController::class, 'stopImpersonation']);
+});
+
+// =====================
+// SUPERADMIN IMPERSONATION ROUTES
+// =====================
+Route::middleware(['auth'])->group(function () {
+    Route::get('/superadmin/impersonate/start/{userId}', [App\Http\Controllers\SuperAdmin\ImpersonateController::class, 'start']);
+    Route::get('/superadmin/impersonate/stop', [App\Http\Controllers\SuperAdmin\ImpersonateController::class, 'stop']);
+});
+
+
 
 // =====================
 // INCLUDE OTHER ROUTES

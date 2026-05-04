@@ -6,6 +6,7 @@ use App\Http\Controllers\SuperAdminController;
 use App\Http\Controllers\SuperAdmin\ResultController;
 use App\Http\Controllers\SuperAdmin\Config\GeneralSettingsController;
 use App\Http\Controllers\SuperAdmin\Config\RolesController;
+use App\Http\Controllers\SuperAdmin\ImpersonateController;
 use App\Http\Controllers\SuperAdmin\UserController;
 use App\Http\Controllers\SuperAdmin\StudentController;
 use App\Http\Controllers\SuperAdmin\StaffController;
@@ -242,7 +243,46 @@ Route::prefix('superadmin')->name('superadmin.')->middleware(['auth', 'role:Supe
             Route::get('/export', [ReportController::class, 'exportRepeatModule'])->name('export');
         });
     });
+    
 
+    // ==================== IMPERSONATION MANAGEMENT ====================
+Route::prefix('impersonate')->name('impersonate.')->group(function () {
+    
+    // Start impersonation - NO middleware here!
+    Route::get('/start/{userId}', [ImpersonateController::class, 'start'])
+        ->name('start');
+    
+    
+    
+    // View logs (Super Admin only)
+    Route::get('/logs', [ImpersonateController::class, 'logs'])
+        ->name('logs')
+        ->middleware('can_impersonate');
+    
+    // Active impersonations
+    Route::get('/active', [ImpersonateController::class, 'activeSessions'])
+        ->name('active')
+        ->middleware('can_impersonate');
+    
+    // Force stop (emergency)
+    Route::post('/force-stop/{logId}', [ImpersonateController::class, 'forceStop'])
+        ->name('force-stop')
+        ->middleware('can_impersonate');
+    
+    // Export logs
+    Route::get('/export-logs', [ImpersonateController::class, 'exportLogs'])
+        ->name('export-logs')
+        ->middleware('can_impersonate');
+    
+    // Clear expired impersonations
+    Route::post('/clear-expired', [ImpersonateController::class, 'clearExpired'])
+        ->name('clear-expired')
+        ->middleware('can_impersonate');
+    
+    // Get impersonation status (AJAX) - NO middleware needed
+    Route::get('/status', [ImpersonateController::class, 'status'])
+        ->name('status');
+});
     // =====================
     // SYSTEM CONFIGURATION
     // =====================
@@ -757,4 +797,6 @@ Route::get('/results/transcript/{studentId}', [ResultController::class, 'transcr
         Route::get('/student/{studentId}', [InvoiceController::class, 'getStudentInvoices'])->name('student-invoices');
         Route::get('/statistics', [InvoiceController::class, 'statistics'])->name('statistics');
     });
+
+    
 });

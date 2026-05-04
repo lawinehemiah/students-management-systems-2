@@ -114,25 +114,32 @@
                                         @endif
                                     </td>
                                     <td>
-                                        <div class="btn-group btn-group-sm">
-                                            <a href="{{ route('hod.students.profile', $student->id) }}" 
-                                               class="btn btn-info" title="View Profile">
-                                                <i class="fas fa-eye"></i>
-                                            </a>
-                                            <a href="{{ route('hod.students.academic-history', $student->id) }}" 
-                                               class="btn btn-primary" title="Academic History">
-                                                <i class="fas fa-history"></i>
-                                            </a>
-                                            <a href="{{ route('hod.students.register-courses', $student->id) }}" 
-                                               class="btn btn-success" title="Register Courses">
-                                                <i class="fas fa-edit"></i>
-                                            </a>
-                                            <a href="{{ route('hod.students.clearance', $student->id) }}" 
-                                               class="btn btn-warning" title="Clearance Status">
-                                                <i class="fas fa-check-circle"></i>
-                                            </a>
-                                        </div>
-                                    </td>
+    <div class="btn-group btn-group-sm">
+        <a href="{{ route('hod.students.profile', $student->id) }}" 
+           class="btn btn-info" title="View Profile">
+            <i class="fas fa-eye"></i>
+        </a>
+        <a href="{{ route('hod.students.academic-history', $student->id) }}" 
+           class="btn btn-primary" title="Academic History">
+            <i class="fas fa-history"></i>
+        </a>
+        <a href="{{ route('hod.students.register-courses', $student->id) }}" 
+           class="btn btn-success" title="Register Courses">
+            <i class="fas fa-edit"></i>
+        </a>
+        <a href="{{ route('hod.students.clearance', $student->id) }}" 
+           class="btn btn-warning" title="Clearance Status">
+            <i class="fas fa-check-circle"></i>
+        </a>
+        {{-- IMPERSONATE BUTTON FOR HOD --}}
+        <a href="{{ url('/hod/impersonate/start/' . $student->id) }}" 
+   class="btn btn-dark" 
+   title="Login as {{ $student->user->first_name ?? 'Student' }}"
+   onclick="return confirm('You will login as {{ $student->user->first_name ?? 'Student' }} {{ $student->user->last_name ?? '' }}. You will see exactly what they see. Continue?')">
+    <i class="fas fa-mask"></i> Login
+</a>
+    </div>
+</td>
                                 </tr>
                                 @empty
                                 <tr>

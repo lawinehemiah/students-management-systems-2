@@ -41,6 +41,7 @@ Route::prefix('students')->name('students.')->group(function () {
     Route::post('/activate/{id}', [HodController::class, 'activateStudent'])->name('activate');
 });
 
+
         // =====================
         // PROMOTION ROUTES
         // =====================
@@ -196,6 +197,8 @@ Route::prefix('results')->name('results.')->group(function () {
             Route::post('/maintenance', [HodController::class, 'storeMaintenanceLog'])->name('store-maintenance');
         });
 
+        
+
         // =====================
         // SETTINGS
         // =====================
@@ -248,5 +251,4 @@ Route::prefix('results')->name('results.')->group(function () {
         Route::get('/staff', [HodController::class, 'staffList'])->name('staff'); // Legacy
         Route::get('/analytics', [HodController::class, 'analytics'])->name('analytics'); // Legacy
     });
-
-    
+    // =====================

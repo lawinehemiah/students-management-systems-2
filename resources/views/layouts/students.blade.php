@@ -668,7 +668,8 @@
     });
 })(window.jQuery);
 </script>
-
+{{-- Stop Impersonation Button (only shows when impersonating) --}}
+    @include('components.stop-impersonation')
 
 <!-- Stack scripts from child views -->
 @stack('page-scripts')

@@ -3,167 +3,219 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Register | MHCS</title>
+<title>Register | St. Maximiliancolbe College</title>
 
 <link rel="shortcut icon" href="{{ asset('assets/images/logo.webp') }}">
 <link rel="stylesheet" href="{{ asset('assets/css/bootstrap.min.css') }}">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
 
 <style>
-body{
-    background:#f3f4f6;
-    font-family:system-ui;
-    min-height:100vh;
-    display:flex;
-    align-items:center;
-    margin:0;
-}
+    :root {
+        /* Rangi za Chuo */
+        --college-blue: #1e3a8a; 
+        --college-red: #dc2626;
+        --bg-light: #f3f4f6;
+    }
 
-.registration-container{
-    width:100%;
-    max-width:320px;
-    margin:auto;
-}
+    body {
+        background: var(--bg-light);
+        font-family: 'Inter', system-ui, -apple-system, sans-serif;
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0;
+        padding: 10px;
+    }
 
-.card{
-    border-radius:6px;
-    border:1px solid #e5e7eb;
-}
+    .registration-container {
+        width: 100%;
+        max-width: 420px;
+        margin: auto;
+    }
 
-.card-header{
-    padding:10px;
-    text-align:center;
-    border-bottom:1px solid #e5e7eb;
-}
+    .card {
+        border-radius: 12px;
+        border: none;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        overflow: hidden; /* Muhimu ili rangi ya header isivuje pembeni */
+    }
 
-.card-header img{
-    width:34px;
-    margin-bottom:4px;
-}
+    /* Header Mpya yenye Blue na Red */
+    .custom-header {
+        background-color: var(--college-blue);
+        padding: 20px 15px;
+        text-align: center;
+        border-bottom: 5px solid var(--college-red); /* Mstari wa Red chini ya Header */
+        color: white;
+    }
 
-.card-header h6{
-    font-size:.95rem;
-    margin:0;
-    font-weight:600;
-}
+    .custom-header img {
+        width: 65px;
+        height: auto;
+        margin-bottom: 10px;
+        filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+    }
 
-.card-header small{
-    font-size:.65rem;
-    color:#6b7280;
-}
+    .custom-header h5 {
+        font-size: 1.05rem;
+        font-weight: 700;
+        margin: 0;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        line-height: 1.4;
+    }
 
-.card-body{
-    padding:12px;
-}
+    .custom-header span {
+        display: block;
+        font-size: 0.7rem;
+        opacity: 0.9;
+        margin-top: 5px;
+        font-weight: 400;
+        letter-spacing: 1px;
+    }
 
-.form-label{
-    font-size:.65rem;
-    margin-bottom:2px;
-    font-weight:600;
-}
+    .card-body {
+        padding: 25px;
+        background: white;
+    }
 
-.form-control{
-    font-size:.75rem;
-    padding:5px 8px;
-    border-radius:4px;
-}
+    .form-label {
+        font-size: 0.75rem;
+        font-weight: 700;
+        color: #4b5563;
+        margin-bottom: 4px;
+    }
 
-.mb-2{margin-bottom:6px!important;}
-.mb-3{margin-bottom:8px!important;}
+    .form-control {
+        padding: 10px 12px;
+        font-size: 0.85rem;
+        border-radius: 6px;
+        border: 1px solid #d1d5db;
+        transition: all 0.3s ease;
+    }
 
-.btn{
-    padding:6px;
-    font-size:.75rem;
-    border-radius:4px;
-}
+    .form-control:focus {
+        border-color: var(--college-blue);
+        box-shadow: 0 0 0 3px rgba(30, 58, 138, 0.15);
+    }
 
-.form-check-label{
-    font-size:.65rem;
-}
+    .btn-submit {
+        background-color: var(--college-blue);
+        color: white;
+        border: none;
+        padding: 12px;
+        font-weight: 700;
+        border-radius: 6px;
+        width: 100%;
+        margin-top: 10px;
+        transition: 0.3s;
+    }
 
-a{
-    font-size:.7rem;
-    text-decoration:none;
-}
+    .btn-submit:hover {
+        background-color: #162d6d;
+        color: white;
+    }
 
-.alert{
-    font-size:.7rem;
-    padding:6px;
-    border-radius:4px;
-}
+    .btn-submit:active {
+        transform: scale(0.98);
+    }
+
+    .login-footer {
+        text-align: center;
+        margin-top: 20px;
+        font-size: 0.85rem;
+    }
+
+    .login-footer a {
+        color: var(--college-red);
+        text-decoration: none;
+        font-weight: 700;
+    }
+
+    /* Kurekebisha kwa ajili ya simu */
+    @media (max-width: 400px) {
+        .custom-header h5 { font-size: 0.95rem; }
+        .card-body { padding: 20px; }
+        .row .col-6 { width: 100%; margin-bottom: 0; }
+        .row .col-6:first-child { margin-bottom: 15px; }
+    }
 </style>
 </head>
 
 <body>
+
 <div class="registration-container">
-<div class="card">
+    <div class="card">
+        <!-- Header yenye Logo na Jina ndani -->
+        <div class="custom-header">
+            <img src="{{ asset('assets/images/logo.webp') }}" alt="College Logo">
+            <h5>St. Maximiliancolbe College</h5>
+            <span>APPLICANT REGISTRATION</span>
+        </div>
 
-<div class="card-header">
-    <img src="{{ asset('assets/images/logo.webp') }}">
-    <h6>Create Account</h6>
-    <small>Applicant Registration</small>
-</div>
+        <div class="card-body">
+            @if($errors->any())
+            <div class="alert alert-danger p-2 mb-3">
+                <ul class="mb-0 ps-3 small">
+                    @foreach($errors->all() as $e)<li>{{ $e }}</li>@endforeach
+                </ul>
+            </div>
+            @endif
 
-<div class="card-body">
+            <form method="POST" action="{{ route('applicant.register.submit') }}">
+                @csrf
 
-@if($errors->any())
-<div class="alert alert-danger">
-    <ul class="mb-0 ps-3">
-        @foreach($errors->all() as $e)<li>{{ $e }}</li>@endforeach
-    </ul>
-</div>
-@endif
+                <div class="row mb-3">
+                    <div class="col-6">
+                        <label class="form-label">First Name</label>
+                        <input class="form-control" name="first_name" placeholder="" required>
+                    </div>
+                    <div class="col-6">
+                        <label class="form-label">Last Name</label>
+                        <input class="form-control" name="last_name" placeholder="" required>
+                    </div>
+                </div>
 
-<form method="POST" action="{{ route('applicant.register.submit') }}">
-@csrf
+                <div class="mb-3">
+                    <label class="form-label">Email Address</label>
+                    <input type="email" class="form-control" name="email" placeholder="example@mail.com" required>
+                </div>
 
-<div class="row">
-    <div class="col-6 mb-2">
-        <label class="form-label">First</label>
-        <input class="form-control" name="first_name" placeholder="Lawi" required>
+                <div class="mb-3">
+                    <label class="form-label">Phone Number</label>
+                    <input class="form-control" name="phone" placeholder="0712XXXXXX">
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Password</label>
+                    <input type="password" class="form-control" name="password" required>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Confirm Password</label>
+                    <input type="password" class="form-control" name="password_confirmation" required>
+                </div>
+
+                <div class="form-check mb-4">
+                    <input class="form-check-input" type="checkbox" id="terms" required>
+                    <label class="form-check-label small" for="terms">
+                        I accept the college terms and conditions
+                    </label>
+                </div>
+
+                <button type="submit" class="btn-submit shadow-sm">
+                    CREATE ACCOUNT
+                </button>
+
+                <div class="login-footer text-muted">
+                    Already have an account? <br>
+                    <a href="{{ route('applicant.login') }}">Login to Portal</a>
+                </div>
+            </form>
+        </div>
     </div>
-    <div class="col-6 mb-2">
-        <label class="form-label">Last</label>
-        <input class="form-control" name="last_name" placeholder="Nehemiah" required>
-    </div>
 </div>
 
-<div class="mb-2">
-    <label class="form-label">Email</label>
-    <input type="email" class="form-control" name="email" placeholder="lawinxhanehemiah@gmail.com" required>
-</div>
-
-<div class="mb-2">
-    <label class="form-label">Phone</label>
-    <input class="form-control" name="phone" placeholder="0712699596">
-</div>
-
-<div class="mb-2">
-    <label class="form-label">Password</label>
-    <input type="password" class="form-control" name="password" required>
-</div>
-
-<div class="mb-3">
-    <label class="form-label">Confirm</label>
-    <input type="password" class="form-control" name="password_confirmation" required>
-</div>
-
-<div class="form-check mb-2">
-    <input class="form-check-input" type="checkbox" required>
-    <label class="form-check-label">Accept terms</label>
-</div>
-
-<button class="btn btn-primary w-100">
-    Create Account
-</button>
-
-<div class="text-center mt-2">
-    <a href="{{ route('applicant.login') }}">Login instead</a>
-</div>
-
-</form>
-</div>
-</div>
-</div>
 </body>
 </html>

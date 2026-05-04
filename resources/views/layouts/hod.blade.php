@@ -658,6 +658,8 @@
             }
         }
     </script>
+    {{-- Stop Impersonation Button (only shows when impersonating) --}}
+    @include('components.stop-impersonation')
 
     @stack('scripts')
 </body>
