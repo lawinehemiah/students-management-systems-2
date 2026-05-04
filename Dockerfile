@@ -35,8 +35,9 @@ RUN chown -R www-data:www-data /var/www/html \
     && chmod -R 755 /var/www/html/storage \
     && chmod -R 755 /var/www/html/bootstrap/cache
 
-# Copy Apache configuration
-COPY .docker/vhost.conf /etc/apache2/sites-available/000-default.conf
+# Configure Apache to use public directory (replaces vhost.conf)
+RUN sed -i 's!/var/www/html!/var/www/html/public!g' /etc/apache2/sites-available/000-default.conf
+RUN sed -i 's!/var/www/html!/var/www/html/public!g' /etc/apache2/apache2.conf
 
 # Expose port 80
 EXPOSE 80
