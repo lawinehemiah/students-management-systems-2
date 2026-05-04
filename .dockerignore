@@ -1,0 +1,13 @@
+.git
+.gitignore
+.env
+.docker
+Dockerfile
+README.md
+node_modules
+vendor
+storage/logs/*.log
+bootstrap/cache/*.php
+.env.*
+phpunit.xml
+.gitattributes
