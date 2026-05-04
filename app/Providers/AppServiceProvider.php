@@ -8,11 +8,24 @@ use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\ServiceProvider;
 use Livewire\Livewire;
+use Illuminate\Support\Facades\DB;
 
 class AppServiceProvider extends ServiceProvider
 {
     public function boot(): void
     {
+        // Skip database checks during build/deployment
+        if ($this->app->runningInConsole()) {
+            return;
+        }
+
+        try {
+            DB::connection()->getPdo();
+        } catch (\Exception $e) {
+            // Database not ready yet, skip
+            return;
+        }
+
         if (Schema::hasTable('system_settings')) {
             try {
                 $settings = Cache::remember(
