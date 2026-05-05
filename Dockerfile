@@ -1,39 +1,4 @@
-FROM php:8.2-apache
-
-# Install dependencies
-RUN apt-get update && apt-get install -y \
-    libpng-dev \
-    libjpeg-dev \
-    libfreetype6-dev \
-    libzip-dev \
-    zip \
-    unzip \
-    git \
-    curl \
-    libonig-dev \
-    libxml2-dev \
-    && docker-php-ext-configure gd --with-freetype --with-jpeg \
-    && docker-php-ext-install gd mbstring pdo pdo_mysql zip exif pcntl bcmath
-
-# Install Composer
-COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
-
-# Set working directory
-WORKDIR /var/www/html
-
-# Copy application
-COPY . .
-
-# Create .env file if it doesn't exist
-RUN if [ ! -f .env ]; then \
-    echo "APP_KEY=" > .env && \
-    echo "APP_ENV=production" >> .env && \
-    echo "APP_DEBUG=false" >> .env && \
-    echo "APP_URL=http://localhost" >> .env; \
-    fi
-
-# Install PHP dependencies
-RUN composer install --no-interaction --optimize-autoloader --no-dev
+# ... (rest of your Dockerfile)
 
 # Set permissions
 RUN chown -R www-data:www-data /var/www/html \
@@ -42,6 +7,11 @@ RUN chown -R www-data:www-data /var/www/html \
 
 # Generate key (Railway will override with its APP_KEY variable)
 RUN php artisan key:generate
+
+# Disable conflicting MPM modules and enable prefork
+RUN a2dismod mpm_event || true
+RUN a2dismod mpm_worker || true
+RUN a2enmod mpm_prefork
 
 # Enable Apache mod_rewrite
 RUN a2enmod rewrite
