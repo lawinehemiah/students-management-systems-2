@@ -24,8 +24,13 @@ WORKDIR /var/www/html
 # Copy application
 COPY . .
 
-# Copy .env.example to .env if .env doesn't exist
-RUN if [ ! -f .env ]; then cp .env.example .env; fi
+# Create .env file if it doesn't exist
+RUN if [ ! -f .env ]; then \
+    echo "APP_KEY=" > .env && \
+    echo "APP_ENV=production" >> .env && \
+    echo "APP_DEBUG=false" >> .env && \
+    echo "APP_URL=http://localhost" >> .env; \
+    fi
 
 # Install PHP dependencies
 RUN composer install --no-interaction --optimize-autoloader --no-dev
@@ -35,7 +40,7 @@ RUN chown -R www-data:www-data /var/www/html \
     && chmod -R 755 /var/www/html/storage \
     && chmod -R 755 /var/www/html/bootstrap/cache
 
-# Generate key
+# Generate key (Railway will override with its APP_KEY variable)
 RUN php artisan key:generate
 
 # Enable Apache mod_rewrite
